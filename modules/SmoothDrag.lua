@@ -16,7 +16,7 @@ functions.setupDrag = function(Frame)
             dragToggle = true
             dragStart = input.Position
             startPos = Frame.Position
-            
+
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragToggle = false
@@ -35,7 +35,7 @@ functions.setupDrag = function(Frame)
         if input == dragInput and dragToggle then
             local Delta = input.Position - dragStart
             local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-            TweenService:Create(Frame, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = Position}):Play()
+            TweenService:Create(Frame, TweenInfo.new(0.25), {Position = Position}):Play()
         end
     end)
 end
