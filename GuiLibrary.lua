@@ -338,7 +338,6 @@ create.window = function() -- wooo its a window!!
 
     local uilistPadding = Instance.new("UIListLayout", btnList)
     uilistPadding.Padding = UDim.new(0, 10)
-    uilistPadding.VerticalAlignment = Enum.VerticalAlignment.Center
     uilistPadding.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     local size = Instance.new("UISizeConstraint")
@@ -433,8 +432,11 @@ local search = create.btn({
     Parent = window.sidebar,
     Text = "Search"
 }, true)
-local hotbar = create.btn({
-    Parent = window.list,
-    Title = "Hotbar",
-    Description = "Custom hotbar ui!"
-}, false)
+
+for _ = 1, 100, 1 do
+    local hotbar = create.btn({
+        Parent = window.list,
+        Title = "Hotbar",
+        Description = "Custom hotbar ui!"
+    }, false)
+end

@@ -1,55 +1,42 @@
--- bing bing ding dong https://roblox.com/library/8028987965
-local UserInputService = game:GetService("UserInputService")
-local runService = game:GetService("RunService")
-
+-- bing bing ding dong https://roblox.com/library/5250965088
 local functions = {}
 
-function Lerp(a, b, m)
-	return a + (b - a) * m
-end
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
 
-local DRAG_SPEED = 6
-
-functions.setupDrag = function(gui)
-    local dragging
+functions.setupDrag = function(Frame)
+    local dragToggle
     local dragInput
     local dragStart
+    local dragPos
     local startPos
-    local lastMousePos
-    local lastGoalPos
 
-    gui.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
+    Frame.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
+            dragToggle = true
             dragStart = input.Position
-            startPos = gui.Position
-            lastMousePos = UserInputService:GetMouseLocation()
-    
+            startPos = Frame.Position
+            
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
+                    dragToggle = false
                 end
             end)
         end
     end)
     
-    gui.InputChanged:Connect(function(input)
+    Frame.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
 
-    runService.Heartbeat:Connect(function(dt)
-        if not (startPos) then return end;
-	    if not (dragging) and (lastGoalPos) then
-		    gui.Position = UDim2.new(startPos.X.Scale, Lerp(gui.Position.X.Offset, lastGoalPos.X.Offset, dt * DRAG_SPEED), startPos.Y.Scale, Lerp(gui.Position.Y.Offset, lastGoalPos.Y.Offset, dt * DRAG_SPEED))
-	    end
-
-	    local delta = (lastMousePos - UserInputService:GetMouseLocation())
-	    local xGoal = (startPos.X.Offset - delta.X);
-	    local yGoal = (startPos.Y.Offset - delta.Y);
-	    lastGoalPos = UDim2.new(startPos.X.Scale, xGoal, startPos.Y.Scale, yGoal)
-	    gui.Position = UDim2.new(startPos.X.Scale, Lerp(gui.Position.X.Offset, xGoal, dt * DRAG_SPEED), startPos.Y.Scale, Lerp(gui.Position.Y.Offset, yGoal, dt * DRAG_SPEED))
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if input == dragInput and dragToggle then
+            local Delta = input.Position - dragStart
+            local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
+            TweenService:Create(Frame, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = Position}):Play()
+        end
     end)
 end
 
