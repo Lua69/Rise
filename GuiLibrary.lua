@@ -7,7 +7,7 @@
     Sorry but I dont support pedos - Infinite Yield
 ]] local config = { -- default/template config, dont touch it >:C
     Name = "Rise", -- name of hud,
-    Version = 0.1,
+    Version = 0.1, -- version of rise
     Colors = { -- colors
         Background = Color3.fromRGB(23, 28, 35),
         Secondary = Color3.fromRGB(18, 20, 25),
@@ -17,7 +17,8 @@
             Text = Color3.new(1, 1, 1)
         }
     },
-    Font = Enum.Font.Gotham -- font of text
+    Font = Enum.Font.Gotham, -- font of text,
+    tweenInfo = TweenInfo.new(.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut)
 }
 local firstTimer = false
 
@@ -324,7 +325,7 @@ create.window = function() -- wooo its a window!!
     btnList.BackgroundTransparency = 1
     btnList.BorderSizePixel = 0
     btnList.Position = UDim2.new(0.23757574, 0, 0.014109347, 0)
-    btnList.Size = UDim2.new(0, 620, 0, 552)
+    btnList.Size = UDim2.new(.75, 0, .98, 0)
     btnList.BottomImage = ""
     btnList.CanvasSize = UDim2.new(0, 0, 0, 0)
     btnList.ScrollBarThickness = 2
@@ -332,15 +333,16 @@ create.window = function() -- wooo its a window!!
     btnList.ScrollingDirection = Enum.ScrollingDirection.Y
     btnList.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
-    Instance.new("UIListLayout", list)
+    Instance.new("UIListLayout", list).Padding = UDim.new(0, 20)
     Instance.new("UICorner", window)
     Instance.new("UICorner", properCorner)
 
-    local uilistPadding = Instance.new("UIListLayout", btnList)
-    uilistPadding.Padding = UDim.new(0, 10)
-    uilistPadding.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    local uilist = Instance.new("UIListLayout", btnList)
+    uilist.Padding = UDim.new(0, 10)
+    uilist.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     local size = Instance.new("UISizeConstraint")
+    size.MaxSize = Vector2.new(1000, 1000)
     size.MinSize = Vector2.new(500, 500)
 
     modules.scaleUI.AddConstraint(window)
@@ -357,6 +359,9 @@ create.window = function() -- wooo its a window!!
     }
 end
 
+local lastSideBtn = nil
+local window
+
 create.btn = function(info, type) -- clickity clack
     if type then
         local sidebtn = Instance.new("TextButton")
@@ -364,7 +369,7 @@ create.btn = function(info, type) -- clickity clack
 
         sidebtn.Name = randomString()
         sidebtn.Parent = info.Parent
-        sidebtn.BackgroundColor3 = config.Colors.Accent.Default
+        sidebtn.BackgroundColor3 = config.Colors.Background
         sidebtn.BorderSizePixel = 0
         sidebtn.Size = UDim2.new(0, 88, 0, 31)
         sidebtn.Text = ""
@@ -380,20 +385,49 @@ create.btn = function(info, type) -- clickity clack
         txt.TextSize = 14.000
         txt.Text = info.Text
 
-        Instance.new("UICorner", sidebtn)
+        if not lastSideBtn then
+            lastSideBtn = sidebtn
+            sidebtn.BackgroundColor3 = config.Colors.Accent.Default
+        end
 
+        sidebtn.MouseButton1Up:Connect(function()
+            if lastSideBtn ~= sidebtn then
+                for _, btn in next, window.list:GetChildren() do
+                    if btn:IsA("TextButton") and btn:GetAttribute(lastSideBtn.Name) then
+                        btn.Visible = false
+                    end
+                end
+
+                for _, btn in next, window.list:GetChildren() do
+                    if btn:IsA("TextButton") and btn:GetAttribute(sidebtn.Name) then
+                        btn.Visible = true
+                    end
+                end
+
+                TweenService:Create(sidebtn, config.tweenInfo, {BackgroundColor3 = config.Colors.Accent.Default}):Play()
+                TweenService:Create(lastSideBtn, config.tweenInfo, {BackgroundColor3 = config.Colors.Background}):Play()
+            end
+            lastSideBtn = sidebtn
+        end)
+
+        Instance.new("UICorner", sidebtn)
         recalibrateGUIObject(sidebtn)
+
+        return sidebtn
     else
         local btn = Instance.new("TextButton")
         local title = Instance.new("TextLabel")
         local desc = Instance.new("TextLabel")
+        local stroke = Instance.new("UIStroke")
+        local toggle = false
 
         btn.Name = randomString()
         btn.Parent = info.Parent
         btn.BackgroundColor3 = config.Colors.Secondary
-        btn.Size = UDim2.new(1, 0, 0.125, 0)
+        btn.Size = UDim2.new(.95, 0, 0.125, 0)
         btn.Text = ""
         btn.AutoButtonColor = false
+        btn.Visible = false
 
         title.Name = randomString()
         title.Parent = btn
@@ -421,22 +455,57 @@ create.btn = function(info, type) -- clickity clack
         desc.TextXAlignment = Enum.TextXAlignment.Left
         desc.Text = info.Description
 
-        Instance.new("UICorner", btn)
+        stroke.Name = randomString()
+        stroke.Parent = btn
+        stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        stroke.LineJoinMode = Enum.LineJoinMode.Round
+        stroke.Color = config.Colors.Accent.Default
+        stroke.Thickness = 0
 
+        btn.MouseButton1Up:Connect(function()
+            if toggle then
+                TweenService:Create(stroke, config.tweenInfo, {Thickness = .5}):Play()
+                TweenService:Create(title, config.tweenInfo, {TextColor3 = config.Colors.Accent.Default}):Play()
+            else
+                TweenService:Create(stroke, config.tweenInfo, {Thickness = 0}):Play()
+                TweenService:Create(title, config.tweenInfo, {TextColor3 = config.Colors.Accent.Text}):Play()
+            end
+            toggle = not toggle
+        end)
+
+        Instance.new("UICorner", btn)
         recalibrateGUIObject(btn)
+        
+        btn:SetAttribute(info.Tab.Name, true)
+
+        return btn
     end
 end
 
-local window = create.window()
+window = create.window()
 local search = create.btn({
     Parent = window.sidebar,
-    Text = "Search"
+    Text = "UI"
+}, true)
+local combat = create.btn({
+    Parent = window.sidebar,
+    Text = "Combat"
 }, true)
 
-for _ = 1, 100, 1 do
+for _ = 1, 50, 1 do
     local hotbar = create.btn({
         Parent = window.list,
+        Tab = search,
         Title = "Hotbar",
-        Description = "Custom hotbar ui!"
+        Description = "Alter the default hotbar"
+    }, false)
+end
+
+for _ = 1, 50, 1 do
+    local velocity = create.btn({
+        Parent = window.list,
+        Tab = combat,
+        Title = "Velocity",
+        Description = "Drag Heavy Dick And Balls to reduce knockback"
     }, false)
 end

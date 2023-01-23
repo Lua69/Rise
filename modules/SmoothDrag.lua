@@ -35,7 +35,7 @@ functions.setupDrag = function(Frame)
         if input == dragInput and dragToggle then
             local Delta = input.Position - dragStart
             local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-            TweenService:Create(Frame, TweenInfo.new(0.25), {Position = Position}):Play()
+            TweenService:Create(Frame, TweenInfo.new(0.1), {Position = Position}):Play()
         end
     end)
 end
