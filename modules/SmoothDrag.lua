@@ -8,7 +8,7 @@ function Lerp(a, b, m)
 	return a + (b - a) * m
 end
 
-local DRAG_SPEED = 4
+local DRAG_SPEED = 6
 
 functions.setupDrag = function(gui)
     local dragging

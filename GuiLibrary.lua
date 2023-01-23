@@ -275,7 +275,7 @@ create.window = function() -- wooo its a window!!
 
     sidebar.Name = randomString()
     sidebar.Parent = window
-    sidebar.BackgroundColor3 = config.Secondary
+    sidebar.BackgroundColor3 = config.Colors.Secondary
     sidebar.BorderSizePixel = 0
     sidebar.Position = UDim2.new(0.0212672371, 0, 0, 0)
     sidebar.Size = UDim2.new(0.203636333, 0, 1, 0)
@@ -299,7 +299,7 @@ create.window = function() -- wooo its a window!!
     version.Position = UDim2.new(0.0450000018, 0, 0.0759999976, 0)
     version.Size = UDim2.new(0, 160, 0, 22)
     version.Font = Enum.Font.Gotham
-    version.Text = tostring(version) .. " Beta"
+    version.Text = tostring(config.Version) .. " Beta"
     version.TextColor3 = config.Colors.Description
     version.TextSize = 15.000
     version.TextXAlignment = Enum.TextXAlignment.Left
@@ -338,6 +338,7 @@ create.window = function() -- wooo its a window!!
 
     local uilistPadding = Instance.new("UIListLayout", btnList)
     uilistPadding.Padding = UDim.new(0, 10)
+    uilistPadding.VerticalAlignment = Enum.VerticalAlignment.Center
     uilistPadding.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     local size = Instance.new("UISizeConstraint")
@@ -415,7 +416,7 @@ create.btn = function(info, type) -- clickity clack
         desc.Position = UDim2.new(0.0209677424, 0, 0.463768125, 0)
         desc.Size = UDim2.new(0.979032278, 0, -0.318840593, 50)
         desc.Font = config.Font
-        desc.TextColor3 = config.Secondary
+        desc.TextColor3 = config.Colors.Description
         desc.TextSize = 15.000
         desc.TextWrapped = true
         desc.TextXAlignment = Enum.TextXAlignment.Left
@@ -433,7 +434,7 @@ local search = create.btn({
     Text = "Search"
 }, true)
 local hotbar = create.btn({
-    Parent = window.sidebar,
+    Parent = window.list,
     Title = "Hotbar",
     Description = "Custom hotbar ui!"
 }, false)
